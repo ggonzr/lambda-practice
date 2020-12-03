@@ -111,10 +111,17 @@ exports.handler = async (event, context) => {
     reqBody.ip = clientIp;
     reqBody.date = thisTime;
 
+    // Wrapper a la DB
+    let dbObject = {
+      TableName: "listasnegras",
+      Item: reqBody,
+    };
+
     // Guardar el objeto
-    body = await dynamo.put(reqBody).promise();
+    body = await dynamo.put(dbObject).promise();
     body = JSON.stringify(body);
   } else if (event.httpMethod === "GET") {
+    /**
     let paramEmail = event.queryStringParameters.email;
     let isValid = validatorSchema.validate(paramEmail, {
       type: "string",
@@ -134,8 +141,8 @@ exports.handler = async (event, context) => {
         headers,
       };
     }
-
-    body = await dynamo.scan({ email: paramEmail }).promise();
+    */
+    body = await dynamo.scan({ TableName: "listasnegras" }).promise();
     body = JSON.stringify(body);
   } else {
     statusCode = "400";
