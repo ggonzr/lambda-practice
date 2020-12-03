@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken");
-const Validator = require("jsonschema").Validator();
+const Validator = require("jsonschema").Validator;
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 // Cargar las variables en el entorno usando el .env en el entorno personal
