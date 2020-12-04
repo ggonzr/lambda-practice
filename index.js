@@ -23,7 +23,7 @@ const schema = {
  * @returns true/false si el token es valido o no.
  */
 const verifyToken = async (token) => {
-  let decoded = jwt.verify(token, proces.env.SECRET, function (err, decoded) {
+  let decoded = jwt.verify(token, process.env.SECRET, function (err, decoded) {
     if (err) {
       return false;
     } else {
@@ -54,7 +54,7 @@ exports.handler = async (event, context) => {
 
   if (
     event.headers.Authorization === undefined ||
-    event.headers.Authorization.lenght === 0
+    event.headers.Authorization.length === 0
   ) {
     statusCode = "403";
     body = JSON.stringify({
@@ -67,7 +67,7 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const token = event.headers.Authorization.split("Bearer")[0].trim();
+  const token = event.headers.Authorization.split("Bearer")[1].trim();
 
   if (!verifyToken(token)) {
     statusCode = "403";
@@ -103,7 +103,7 @@ exports.handler = async (event, context) => {
     }
 
     // Agregar la IP
-    let clientIp = event.headers["x-forwarded-for"];
+    let clientIp = event.headers["X-Forwarded-For"];
 
     // Agregar la fecha
     let thisTime = new Date().toISOString();
@@ -121,7 +121,6 @@ exports.handler = async (event, context) => {
     body = await dynamo.put(dbObject).promise();
     body = JSON.stringify(body);
   } else if (event.httpMethod === "GET") {
-    /**
     let paramEmail = event.queryStringParameters.email;
     let isValid = validatorSchema.validate(paramEmail, {
       type: "string",
@@ -141,8 +140,10 @@ exports.handler = async (event, context) => {
         headers,
       };
     }
-    */
-    body = await dynamo.scan({ TableName: "listasnegras" }).promise();
+
+    body = await dynamo
+      .scan({ TableName: "listasnegras", email: paramEmail })
+      .promise();
     body = JSON.stringify(body);
   } else {
     statusCode = "400";

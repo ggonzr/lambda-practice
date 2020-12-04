@@ -11,14 +11,13 @@ const dotenv = require("dotenv").config();
  * @returns true/false si el token es valido o no.
  */
 const verifyToken = async (token) => {
-  let decoded = jwt.verify(token, proces.env.SECRET, function (err, decoded) {
-    if (err) {
-      return false;
-    } else {
-      console.log("Token: ", decoded);
-      return true;
-    }
-  });
+  try {
+    let decoded = jwt.verify(token, proces.env.SECRET);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
 /**
@@ -53,14 +52,16 @@ exports.handler = async (event, context) => {
     "Content-Type": "application/json",
   };
 
+  let paramBody = JSON.parse(event.body);
+
   if (event.httpMethod === "POST") {
-    if (event.password === undefined || event.password.lenght === 0) {
+    if (paramBody.password === undefined || paramBody.password.lenght === 0) {
       statusCode = "400";
       body = JSON.stringify({
         msg: "System password not found",
       });
     } else {
-      const token = giveToken(event.password);
+      const token = giveToken(paramBody.password);
       body = JSON.stringify({
         token: token,
       });
